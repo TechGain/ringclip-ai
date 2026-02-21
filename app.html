@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RingClip AI - Create & Post</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh}
+.header{background:#161b22;border-bottom:1px solid #30363d;padding:16px 24px;display:flex;align-items:center;gap:12px}
+.header h1{font-size:20px;font-weight:600}
+.header .logo{width:36px;height:36px;background:#4361ee;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.container{max-width:900px;margin:0 auto;padding:32px 24px}
+.step{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;margin-bottom:20px;display:none}
+.step.active{display:block}
+.step-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.step-num{background:#4361ee;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.step-title{font-size:18px;font-weight:600}
+.btn{background:#4361ee;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:15px;cursor:pointer;font-weight:500;transition:background .2s}
+.btn:hover{background:#3651de}
+.btn-tiktok{background:#000;border:1px solid #333;display:flex;align-items:center;gap:8px}
+.btn-tiktok:hover{background:#1a1a1a}
+.btn-success{background:#238636}
+.btn-success:hover{background:#2ea043}
+.prompt-input{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;color:#e6edf3;font-size:14px;resize:vertical;min-height:80px;margin:12px 0}
+.video-preview{background:#000;border-radius:8px;aspect-ratio:9/16;max-width:300px;display:flex;align-items:center;justify-content:center;margin:16px 0;border:1px solid #30363d;position:relative;overflow:hidden}
+.video-preview .ring-overlay{position:absolute;top:12px;left:12px;font-size:11px;color:#fff;background:rgba(0,0,0,0.6);padding:4px 8px;border-radius:4px;font-family:monospace}
+.video-preview .ring-badge{position:absolute;top:12px;right:12px;background:#1a9fff;color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700}
+.video-preview .placeholder{color:#666;font-size:14px;text-align:center;padding:20px}
+.caption-input{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;color:#e6edf3;font-size:14px;margin:12px 0}
+.success-box{background:#0d1117;border:1px solid #238636;border-radius:8px;padding:20px;text-align:center;margin:16px 0}
+.success-box .check{font-size:48px;margin-bottom:12px}
+.loading{display:none;align-items:center;gap:8px;margin:12px 0;color:#8b949e}
+.loading.show{display:flex}
+.spinner{width:20px;height:20px;border:2px solid #30363d;border-top:2px solid #4361ee;border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.tag{background:#1f2937;border:1px solid #30363d;padding:4px 10px;border-radius:16px;font-size:12px;color:#8b949e}
+</style>
+</head>
+<body>
+<div class="header">
+<div class="logo">📹</div>
+<h1>RingClip AI</h1>
+</div>
+<div class="container">
+
+<!-- Step 1: TikTok Login -->
+<div class="step active" id="step1">
+<div class="step-header"><div class="step-num">1</div><div class="step-title">Connect TikTok Account</div></div>
+<p style="color:#8b949e;margin-bottom:16px">Sign in with your TikTok account to enable direct posting.</p>
+<button class="btn btn-tiktok" onclick="loginTikTok()">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.73a8.19 8.19 0 004.76 1.52V6.79a4.85 4.85 0 01-1-.1z"/></svg>
+Continue with TikTok
+</button>
+<div class="loading" id="login-loading"><div class="spinner"></div>Connecting to TikTok...</div>
+</div>
+
+<!-- Step 2: Generate Video -->
+<div class="step" id="step2">
+<div class="step-header"><div class="step-num">2</div><div class="step-title">Generate Ring Camera Video</div></div>
+<p style="color:#8b949e;margin-bottom:8px">Describe what happens in your Ring doorbell camera clip:</p>
+<textarea class="prompt-input" id="prompt" placeholder="e.g., A raccoon wearing a tiny top hat rings the doorbell, looks directly at the camera, tips his hat, and walks away on two legs">A raccoon wearing a tiny top hat rings the doorbell, looks directly at the camera, tips his hat, and walks away on two legs</textarea>
+<div class="tags">
+<span class="tag">🎥 Ring cam style</span>
+<span class="tag">🌙 Night vision</span>
+<span class="tag">📅 Auto timestamp</span>
+<span class="tag">👁️ Fisheye lens</span>
+</div>
+<button class="btn" onclick="generateVideo()">🎬 Generate Video</button>
+<div class="loading" id="gen-loading"><div class="spinner"></div>Generating with Sora AI... This takes ~30 seconds</div>
+<div class="video-preview" id="video-preview" style="display:none">
+<div class="ring-overlay">02/20/2026 10:42:31 PM</div>
+<div class="ring-badge">● LIVE</div>
+<div class="placeholder" id="video-content">🦝🎩<br><br>AI-Generated Preview<br><span style="font-size:11px;color:#444">Ring Doorbell Camera</span></div>
+</div>
+</div>
+
+<!-- Step 3: Post to TikTok -->
+<div class="step" id="step3">
+<div class="step-header"><div class="step-num">3</div><div class="step-title">Post to TikTok</div></div>
+<p style="color:#8b949e;margin-bottom:8px">Add a caption and post your video:</p>
+<input class="caption-input" id="caption" value="My Ring camera caught this at 3am... 🦝🎩 #ringdoorbell #securitycamera #caughtoncamera #ai" placeholder="Add caption...">
+<div class="tags">
+<span class="tag">#ringdoorbell</span>
+<span class="tag">#securitycamera</span>
+<span class="tag">#caughtoncamera</span>
+<span class="tag">#ai</span>
+<span class="tag">#fyp</span>
+</div>
+<button class="btn btn-success" onclick="postToTikTok()">📤 Post to TikTok</button>
+<div class="loading" id="post-loading"><div class="spinner"></div>Publishing to TikTok via Content Posting API...</div>
+</div>
+
+<!-- Step 4: Success -->
+<div class="step" id="step4">
+<div class="step-header"><div class="step-num">✓</div><div class="step-title">Posted Successfully!</div></div>
+<div class="success-box">
+<div class="check">✅</div>
+<p style="font-size:18px;font-weight:600;margin-bottom:8px">Video Published to TikTok</p>
+<p style="color:#8b949e">Your AI-generated Ring camera clip is now live on your TikTok profile.</p>
+</div>
+<button class="btn" onclick="restart()">🎬 Create Another Video</button>
+</div>
+
+</div>
+
+<script>
+function showStep(n){document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.getElementById('step'+n).classList.add('active')}
+function loginTikTok(){document.getElementById('login-loading').classList.add('show');setTimeout(()=>{document.getElementById('login-loading').classList.remove('show');showStep(2)},2000)}
+function generateVideo(){document.getElementById('gen-loading').classList.add('show');setTimeout(()=>{document.getElementById('gen-loading').classList.remove('show');document.getElementById('video-preview').style.display='flex';setTimeout(()=>showStep(3),1500)},3000)}
+function postToTikTok(){document.getElementById('post-loading').classList.add('show');setTimeout(()=>{document.getElementById('post-loading').classList.remove('show');showStep(4)},2500)}
+function restart(){showStep(1)}
+</script>
+</body>
+</html>
